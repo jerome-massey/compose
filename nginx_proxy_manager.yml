@@ -41,3 +41,7 @@ volumes:
   nginx_proxy_manager_data:
   nginx_proxy_manager_letsencrypt:
   nginx_proxy_manager_mysql:
+networks:
+  default:
+    external:
+      name: shared_network
