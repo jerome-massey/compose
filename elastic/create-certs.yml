@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
   create_certs:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
     container_name: create_certs
     command: >
       bash -c '
@@ -15,13 +15,13 @@ services:
       '
     working_dir: /usr/share/elasticsearch
     volumes: 
-      - es_certs:/certs
+      - certs:/certs
       - .:/usr/share/elasticsearch/config/certificates
     networks:
       - shared_network        
 
 volumes: 
-  es_certs:
+  certs:
     driver: local
 
 networks:
