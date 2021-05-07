@@ -1,16 +1,16 @@
 version: '2.2'
 
 services:
-  elasticsearch:
+  es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION}
-    container_name: elasticsearch
+    container_name: es01
     environment:
-      - node.name=elasticsearch
+      - node.name=es01
       - cluster.name=es-docker-cluster      
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"      
-      - xpack.license.self_generated.type=basic # <1>
+      - xpack.license.self_generated.type=trial # <1>
       - xpack.security.enabled=true      
       - xpack.security.http.ssl.enabled=true # <2>
       - xpack.security.http.ssl.key=$CERTS_DIR/es01/es01.key
@@ -26,12 +26,10 @@ services:
         soft: -1
         hard: -1
     volumes: 
-      - es_data01:/usr/share/elasticsearch/data
-      - es_certs:$CERTS_DIR
+      - data01:/usr/share/elasticsearch/data
+      - certs:$CERTS_DIR
     ports:
       - 9200:9200
-    networks:
-      - shared_network
       
     healthcheck:
       test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
@@ -41,13 +39,13 @@ services:
   kib01:
     image: docker.elastic.co/kibana/kibana:${VERSION}
     container_name: kib01
-    depends_on: {"elasticsearch": {"condition": "service_healthy"}}
+    depends_on: {"es01": {"condition": "service_healthy"}}
     ports:
       - 5601:5601    
     environment:
       SERVERNAME: localhost
-      ELASTICSEARCH_URL: https://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+      ELASTICSEARCH_URL: https://es01:9200
+      ELASTICSEARCH_HOSTS: https://es01:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: CHANGEME
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: $CERTS_DIR/ca/ca.crt
@@ -55,22 +53,13 @@ services:
       SERVER_SSL_KEY: $CERTS_DIR/kib01/kib01.key
       SERVER_SSL_CERTIFICATE: $CERTS_DIR/kib01/kib01.crt
     volumes: 
-      - es_certs:$CERTS_DIR
-    networks:
-      - shared_network    
+      - certs:$CERTS_DIR
+
 volumes:
-  es_data01:
+  data01:
     driver: local
-    driver_opts:
-        type: nfs4
-        o: addr=10.0.0.145,rw
-        device: ":/mnt/md0/es_data01"
-  es_certs:
+  certs:
     driver: local
-    driver_opts:
-      type: nfs4
-      o: addr=10.0.0.145,rw
-      device: ":/mnt/md0/es_certs"
 
 networks:
   default:
