@@ -1,4 +1,4 @@
-version: '3.4'
+version: '2.2'
 
 services:
   create_certs:
@@ -15,15 +15,12 @@ services:
       '
     working_dir: /usr/share/elasticsearch
     volumes: 
-      - type: volume
-        source: certs
-        target: /certs
-      - type: bind
-        source: .
-        target: /usr/share/elasticsearch/config/certificates
+      - certs:/certs
+      - .:/usr/share/elasticsearch/config/certificates 
 
 volumes: 
   certs:
+    driver: local
 
 networks:
   default:

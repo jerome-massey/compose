@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    user: root
+    image: "docker.elastic.co/beats/filebeat:${VERSION}"
+    volumes:
+      - type: volume
+        source: fbdata
+        target: /usr/share/filebeat/data/
+        volume:
+          nocopy: true
+      - type: bind
+        source: /root/beats/filebeat/filebeat.yml
+        target: /usr/share/filebeat/filebeat.yml
+      - type: bind
+        source: /root/beats/filebeat/modules.d/
+        target: /usr/share/filebeat/modules.d/
+    command: filebeat -e -E output.elasticsearch.username=${ELASTICSEARCH_USERNAME} -E output.elasticsearch.password=${ELASTICSEARCH_PASSWORD} -strict.perms=false
+    restart: on-failure
+    environment:
+      - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
+      - KIBANA_HOST=${KIBANA_HOST}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - KIBANA_HOST_USERNAME=${KIBANA_HOST_USERNAME}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
+volumes:
+  fbdata:
+    driver: local
+    driver_opts:
+      type: nfs4
+      o: addr=10.0.0.145,rw
+      device: ":/mnt/md0/fb_data01"
+
+
+networks:
+  default:
+    external:
+      name: shared_network
+ 
