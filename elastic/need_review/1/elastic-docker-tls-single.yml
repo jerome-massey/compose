@@ -1,4 +1,4 @@
-version: '3.4'
+version: '2.2'
 
 services:
   es01:
@@ -25,16 +25,9 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - type: volume
-        source: data01
-        target: /usr/share/elasticsearch/data
-        volume:
-          nocopy: true
-      - type: volume
-        source: certs
-        target: $CERTS_DIR
-
+    volumes: 
+      - data01:/usr/share/elasticsearch/data
+      - certs:$CERTS_DIR
     ports:
       - 9200:9200
       
@@ -46,8 +39,7 @@ services:
   kib01:
     image: docker.elastic.co/kibana/kibana:${VERSION}
     container_name: kib01
-    depends_on: 
-      - es01
+    depends_on: {"es01": {"condition": "service_healthy"}}
     ports:
       - 5601:5601    
     environment:
@@ -61,18 +53,13 @@ services:
       SERVER_SSL_KEY: $CERTS_DIR/kib01/kib01.key
       SERVER_SSL_CERTIFICATE: $CERTS_DIR/kib01/kib01.crt
     volumes: 
-      - type: volume
-        source: certs
-        target: $CERTS_DIR
+      - certs:$CERTS_DIR
 
 volumes:
   data01:
     driver: local
-    driver_opts:
-      type: nfs4
-      o: addr=10.0.0.145,rw
-      device: ":/mnt/md0/es_data01"
   certs:
+    driver: local
 
 networks:
   default:
