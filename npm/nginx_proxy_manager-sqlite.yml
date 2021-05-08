@@ -11,17 +11,7 @@ services:
       # Admin Web Port:
       - '81:81'
     environment:
-      # These are the settings to access your db
-      # DB_MYSQL_HOST: "db"
-      # DB_MYSQL_PORT: 3306
-      # DB_MYSQL_USER: "${MYSQL_USER}"
-      # DB_MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-      # DB_MYSQL_NAME: "${MYSQL_DATABASE}"
-      # If you would rather use Sqlite uncomment this
-      # and remove all DB_MYSQL_* lines above
       DB_SQLITE_FILE: "/data/database.sqlite"
-      # Uncomment this if IPv6 is not enabled on your host
-      # DISABLE_IPV6: 'true'
     volumes:
       - type: volume
         source: nginx_proxy_manager_data
