@@ -16,6 +16,7 @@
 
 
 https://www.elastic.co/guide/en/beats/filebeat/current/privileges-to-publish-events.html
+
 https://www.elastic.co/guide/en/beats/filebeat/current/privileges-to-setup-beats.html
 
 1. Create users and roles from the links listed "filebeat_writer" and "filebeat_kib_setup"
