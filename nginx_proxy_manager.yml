@@ -14,33 +14,62 @@ services:
       # These are the settings to access your db
       DB_MYSQL_HOST: "db"
       DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: "npm"
-      DB_MYSQL_PASSWORD: "npm"
-      DB_MYSQL_NAME: "npm"
+      DB_MYSQL_USER: "${MYSQL_USER}"
+      DB_MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      DB_MYSQL_NAME: "${MYSQL_DATABASE}"
       # If you would rather use Sqlite uncomment this
       # and remove all DB_MYSQL_* lines above
       # DB_SQLITE_FILE: "/data/database.sqlite"
       # Uncomment this if IPv6 is not enabled on your host
       # DISABLE_IPV6: 'true'
     volumes:
-      - nginx_proxy_manager_data:/data
-      - nginx_proxy_manager_letsencrypt:/etc/letsencrypt
+      - type: volume
+        source: nginx_proxy_manager_data
+        target: /data
+        volume:
+          nocopy: true
+      - type: volume
+        source: nginx_proxy_manager_letsencrypt
+        target: /etc/letsencrypt
+        volume:
+          nocopy: true
     depends_on:
       - db
   db:
     image: 'jc21/mariadb-aria:latest'
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 'npm'
-      MYSQL_DATABASE: 'npm'
-      MYSQL_USER: 'npm'
-      MYSQL_PASSWORD: 'npm'
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
     volumes:
-      - nginx_proxy_manager_mysql:/var/lib/mysql
+      - type: volume
+        source: nginx_proxy_manager_mysql
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+
 volumes:
   nginx_proxy_manager_data:
+    driver: local
+    driver_opts:
+      type: nfs4
+      o: addr=10.0.0.145,rw
+      device: ":/mnt/md0/nginx_proxy_manager_data"
   nginx_proxy_manager_letsencrypt:
+    driver: local
+    driver_opts:
+      type: nfs4
+      o: addr=10.0.0.145,rw
+      device: ":/mnt/md0/nginx_proxy_manager_data"
   nginx_proxy_manager_mysql:
+    driver: local
+    driver_opts:
+      type: nfs4
+      o: addr=10.0.0.145,rw
+      device: ":/mnt/md0/nginx_proxy_manager_mysql"
+
 networks:
   default:
     external:
