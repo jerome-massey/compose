@@ -15,12 +15,16 @@ services:
       '
     working_dir: /usr/share/elasticsearch
     volumes: 
-      - certs:/certs
+      - certs:/certs:nocopy
       - .:/usr/share/elasticsearch/config/certificates 
 
 volumes: 
   certs:
     driver: local
+    driver_opts:
+       type: nfs4
+       o: addr=10.0.0.145,rw
+       device: ":/mnt/md0/es_certs"
 
 networks:
   default:
