@@ -1,0 +1,57 @@
+version: "3"
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      # Public HTTP Port:
+      - '80:80'
+      # Public HTTPS Port:
+      - '443:443'
+      # Admin Web Port:
+      - '81:81'
+    environment:
+      # These are the settings to access your db
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "${MYSQL_USER}"
+      DB_MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      DB_MYSQL_NAME: "${MYSQL_DATABASE}"
+      # If you would rather use Sqlite uncomment this
+      # and remove all DB_MYSQL_* lines above
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+    volumes:
+      - type: volume
+        source: nginx_proxy_manager_data
+        target: /data
+      - type: volume
+        source: nginx_proxy_manager_letsencrypt
+        target: /etc/letsencrypt
+    depends_on:
+      - db
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+    volumes:
+      - type: volume
+        source: nginx_proxy_manager_mysql
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+
+volumes:
+  nginx_proxy_manager_data:
+  nginx_proxy_manager_letsencrypt:
+  nginx_proxy_manager_mysql:
+
+networks:
+  default:
+    external:
+      name: shared_network

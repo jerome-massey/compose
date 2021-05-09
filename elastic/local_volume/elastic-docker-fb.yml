@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    user: root
+    image: "docker.elastic.co/beats/filebeat:${VERSION}"
+    volumes:
+      - type: volume
+        source: fbdata
+        target: /usr/share/filebeat/data/
+      - type: bind
+        source: /root/beats/filebeat/filebeat.yml
+        target: /usr/share/filebeat/filebeat.yml
+    command: filebeat -e -E output.elasticsearch.username=${ELASTICSEARCH_USERNAME} -E output.elasticsearch.password=${ELASTICSEARCH_PASSWORD} -strict.perms=false
+    restart: on-failure
+    environment:
+      - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
+      - KIBANA_HOST=${KIBANA_HOST}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - KIBANA_HOST_USERNAME=${KIBANA_HOST_USERNAME}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
+volumes:
+  fbdata:
+
+networks:
+  default:
+    external:
+      name: shared_network
+ 

@@ -1,0 +1,30 @@
+version: "3"
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      # Public HTTP Port:
+      - '80:80'
+      # Public HTTPS Port:
+      - '443:443'
+      # Admin Web Port:
+      - '81:81'
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - type: volume
+        source: nginx_proxy_manager_data
+        target: /data
+      - type: volume
+        source: nginx_proxy_manager_letsencrypt
+        target: /etc/letsencrypt
+
+volumes:
+  nginx_proxy_manager_data:
+  nginx_proxy_manager_letsencrypt:
+
+networks:
+  default:
+    external:
+      name: shared_network
