@@ -20,6 +20,7 @@ https://www.elastic.co/guide/en/beats/filebeat/current/privileges-to-publish-eve
 https://www.elastic.co/guide/en/beats/filebeat/current/privileges-to-setup-beats.html
 
 1. Create users and roles from the links listed "filebeat_writer" and "filebeat_kib_setup"
+  - Also add 'cluster:admin/ilm/put' to Cluster privileges - Needed to run 'filebeat setup -e'
 2. Create /beats/filebeat.yml file and paste the below in the file. Also create /root/beats/filebeat/prospectors.d/ directory.
 2. Create another stack and paste elastic-docker-fb.yml add the following environement variables (ELASTICSEARCH_HOST=https://es01:9200 , ELASTICSEARCH_USERNAME=filebeat_writer , ELASTICSEARCH_PASSWORD=CHANGEME , KIBANA_HOST_USERNAME=filebeat_kib_setup , KIBANA_HOST=kib01:5601 , KIBANA_PASSWORD=CHAMGEME , VERSION=7.12.1)
 3. Deploy the stack
@@ -48,3 +49,6 @@ setup.kibana:
   password: '${KIBANA_PASSWORD}'
   ssl.enabled: true
   ssl.verification_mode: none
+
+
+cluster:admin/ilm/put
