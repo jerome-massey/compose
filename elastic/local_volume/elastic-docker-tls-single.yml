@@ -3,7 +3,7 @@ version: '3.4'
 services:
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION}
-    container_name: es01
+    container_name: ${CON_NAME}
     environment:
       - node.name=es01
       - cluster.name=es-docker-cluster      
@@ -13,14 +13,14 @@ services:
       - xpack.license.self_generated.type=basic # <1>
       - xpack.security.enabled=true      
       - xpack.security.http.ssl.enabled=true # <2>
-      - xpack.security.http.ssl.key=$CERTS_DIR/es01/es01.key
-      - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
-      - xpack.security.http.ssl.certificate=$CERTS_DIR/es01/es01.crt
+      - xpack.security.http.ssl.key=${CERTS_DIR}/es01/es01.key
+      - xpack.security.http.ssl.certificate_authorities=${CERTS_DIR}/ca/ca.crt
+      - xpack.security.http.ssl.certificate=${CERTS_DIR}/es01/es01.crt
       - xpack.security.transport.ssl.enabled=true # <3>
       - xpack.security.transport.ssl.verification_mode=certificate # <4>
-      - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
-      - xpack.security.transport.ssl.certificate=$CERTS_DIR/es01/es01.crt
-      - xpack.security.transport.ssl.key=$CERTS_DIR/es01/es01.key
+      - xpack.security.transport.ssl.certificate_authorities=${CERTS_DIR}/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=${CERTS_DIR}/es01/es01.crt
+      - xpack.security.transport.ssl.key=${CERTS_DIR}/es01/es01.key
     ulimits:
       memlock:
         soft: -1
@@ -31,13 +31,13 @@ services:
         target: /usr/share/elasticsearch/data
       - type: volume
         source: certs
-        target: $CERTS_DIR
+        target: ${CERTS_DIR}
 
     ports:
       - 9200:9200
       
     healthcheck:
-      test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      test: curl --cacert ${CERTS_DIR}/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
       timeout: 10s
       retries: 5
@@ -50,18 +50,18 @@ services:
       - 5601:5601    
     environment:
       SERVERNAME: localhost
-      ELASTICSEARCH_URL: https://es01:9200
-      ELASTICSEARCH_HOSTS: https://es01:9200
+      ELASTICSEARCH_URL: ${ELASTICSEARCH_HOST_CON_URI}
+      ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOST_CON_URI}
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: CHANGEME
-      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: $CERTS_DIR/ca/ca.crt
+      ELASTICSEARCH_PASSWORD: ${KIBANA_SYSTEM_USER_PASS}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: ${CERTS_DIR}/ca/ca.crt
       SERVER_SSL_ENABLED: "true"
-      SERVER_SSL_KEY: $CERTS_DIR/kib01/kib01.key
-      SERVER_SSL_CERTIFICATE: $CERTS_DIR/kib01/kib01.crt
+      SERVER_SSL_KEY: ${CERTS_DIR}/kib01/kib01.key
+      SERVER_SSL_CERTIFICATE: ${CERTS_DIR}/kib01/kib01.crt
     volumes: 
       - type: volume
         source: certs
-        target: $CERTS_DIR
+        target: ${CERTS_DIR}
 
 volumes:
   data01:
@@ -69,6 +69,5 @@ volumes:
 
 networks:
   default:
-    external:
-      name: shared_network
+      name: es_network
  
