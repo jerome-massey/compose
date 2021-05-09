@@ -15,9 +15,9 @@ services:
       - type: bind
         source: /root/beats/filebeat/filebeat.yml
         target: /usr/share/filebeat/filebeat.yml
-      - type: bind
-        source: /root/beats/filebeat/modules.d/
-        target: /usr/share/filebeat/modules.d/
+      # - type: bind
+      #   source: /root/beats/filebeat/modules.d/
+      #   target: /usr/share/filebeat/modules.d/
     command: filebeat -e -E output.elasticsearch.username=${ELASTICSEARCH_USERNAME} -E output.elasticsearch.password=${ELASTICSEARCH_PASSWORD} -strict.perms=false
     restart: on-failure
     environment:
