@@ -42,3 +42,16 @@ setup.kibana:
   password: '${FBS_PWD}'
   ssl.enabled: true
   ssl.verification_mode: none
+
+
+##  Grok Patterns to apply to filebeat-7.12.1-cisco-ios-pipeline
+
+%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}
+
+%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{CISCO_REASON:facility_sub}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}
+
+# Pattern definitions
+
+{
+  "CISCOTIMESTAMPTZ": "%{CISCOTIMESTAMP}( %{TZ})?"
+}

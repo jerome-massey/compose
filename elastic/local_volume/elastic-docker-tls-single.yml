@@ -3,7 +3,7 @@ version: '3.4'
 services:
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION}
-    container_name: ${CON_NAME}
+    container_name: es01
     environment:
       - node.name=es01
       - cluster.name=es-docker-cluster      
@@ -50,10 +50,10 @@ services:
       - 5601:5601    
     environment:
       SERVERNAME: localhost
-      ELASTICSEARCH_URL: ${ELASTICSEARCH_HOST_CON_URI}
-      ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOST_CON_URI}
+      ELASTICSEARCH_URL: https://es01:9200
+      ELASTICSEARCH_HOSTS: https://es01:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_SYSTEM_USER_PASS}
+      ELASTICSEARCH_PASSWORD: CHANGEME
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: ${CERTS_DIR}/ca/ca.crt
       SERVER_SSL_ENABLED: "true"
       SERVER_SSL_KEY: ${CERTS_DIR}/kib01/kib01.key

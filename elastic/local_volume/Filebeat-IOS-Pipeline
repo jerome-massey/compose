@@ -1,0 +1,148 @@
+# Processors
+
+[
+  {
+    "set": {
+      "value": "{{_ingest.timestamp}}",
+      "field": "event.ingested"
+    }
+  },
+  {
+    "geoip": {
+      "target_field": "source.geo",
+      "ignore_missing": true,
+      "field": "source.ip"
+    }
+  },
+  {
+    "geoip": {
+      "field": "destination.ip",
+      "target_field": "destination.geo",
+      "ignore_missing": true
+    }
+  },
+  {
+    "geoip": {
+      "field": "source.ip",
+      "target_field": "source.as",
+      "properties": [
+        "asn",
+        "organization_name"
+      ],
+      "ignore_missing": true,
+      "database_file": "GeoLite2-ASN.mmdb"
+    }
+  },
+  {
+    "geoip": {
+      "properties": [
+        "asn",
+        "organization_name"
+      ],
+      "ignore_missing": true,
+      "database_file": "GeoLite2-ASN.mmdb",
+      "field": "destination.ip",
+      "target_field": "destination.as"
+    }
+  },
+  {
+    "rename": {
+      "field": "source.as.asn",
+      "target_field": "source.as.number",
+      "ignore_missing": true
+    }
+  },
+  {
+    "rename": {
+      "ignore_missing": true,
+      "field": "source.as.organization_name",
+      "target_field": "source.as.organization.name"
+    }
+  },
+  {
+    "rename": {
+      "target_field": "destination.as.number",
+      "ignore_missing": true,
+      "field": "destination.as.asn"
+    }
+  },
+  {
+    "rename": {
+      "field": "destination.as.organization_name",
+      "target_field": "destination.as.organization.name",
+      "ignore_missing": true
+    }
+  },
+  {
+    "grok": {
+      "field": "log.original",
+      "patterns": [
+        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}",
+        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{CISCO_REASON:facility_sub}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}"
+      ],
+      "pattern_definitions": {
+        "CISCOTIMESTAMPTZ": "%{CISCOTIMESTAMP}( %{TZ})?"
+      }
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "0",
+      "replacement": "0 - Emergency"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "1",
+      "replacement": "1 - Alert"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "2",
+      "replacement": "2 - Critical"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "3",
+      "replacement": "3 - Error"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "4",
+      "replacement": "4 - Warning"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "5",
+      "replacement": "5 - Notification"
+    }
+  },
+  {
+    "gsub": {
+      "field": "severity_level",
+      "pattern": "6",
+      "replacement": "6 - Informational"
+    }
+  }
+]
+
+# Failure processors
+
+[
+  {
+    "set": {
+      "value": "{{ _ingest.on_failure_message }}",
+      "field": "error.message"
+    }
+  }
+]
