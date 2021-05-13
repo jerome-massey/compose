@@ -55,3 +55,30 @@ setup.kibana:
 {
   "CISCOTIMESTAMPTZ": "%{CISCOTIMESTAMP}( %{TZ})?"
 }
+
+
+
+# Cisco Configs for Logging.
+
+ip name-server {{ PRI_DNS }} {{ SEC_DNS }}
+!
+ntp server {{ NTP_SERVER }}
+!
+clock timezone EDT -4 0
+!
+service timestamps log datetime localtime
+service timestamps debug datetime localtime
+!
+archive
+log config
+logging enable
+logging size {{ NUMBER }}
+hidekeys
+notify syslog
+!
+logging trap notifications
+logging origin-id hostname
+logging host {{ IP }} transport udp port {{ PORT }}
+!
+archive
+
