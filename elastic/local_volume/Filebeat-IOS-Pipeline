@@ -77,8 +77,8 @@
     "grok": {
       "field": "log.original",
       "patterns": [
-        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}",
-        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? %{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{CISCO_REASON:facility_sub}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}"
+        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? .?%{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}",
+        "%{SYSLOG5424PRI}(%{NUMBER:log_sequence})?:( %{HOSTNAME:hostname}:)? .?%{CISCOTIMESTAMPTZ:log_date}: %%{CISCO_REASON:facility}-%{CISCO_REASON:facility_sub}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:message}"
       ],
       "pattern_definitions": {
         "CISCOTIMESTAMPTZ": "%{CISCOTIMESTAMP}( %{TZ})?"
